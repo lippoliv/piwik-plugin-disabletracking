@@ -8,6 +8,8 @@
 
     namespace Piwik\Plugins\DisableTracking;
 
+    use Piwik\Common;
+    use Piwik\Db;
     use Piwik\Plugin;
 
     class DisableTracking extends
@@ -18,13 +20,29 @@
          * @return array The information for each tracked site if it is disabled or not.
          */
         public static function getSitesStates() {
-            $ret = array(
-                array(
-                    'id'       => 10,
-                    'label'    => 'Meeting Jesus',
-                    'disabled' => FALSE,
-                ),
-            );
+            $ret = array();
+
+            $sql = "
+              SELECT
+                `idsite` as `id`,
+                `name`,
+                `main_url`
+              FROM
+                `" . Common::prefixTable('site') . "`
+              ORDER BY
+                `name` ASC
+            ";
+
+            $rows = Db::query($sql);
+
+            while (($row = $rows->fetch()) !== FALSE) {
+                $ret[] = array(
+                    'id'       => $row['id'],
+                    'label'    => $row['name'],
+                    'url'      => $row['main_url'],
+                    'disabled' => self::isSiteTrackingDisabled($row['id']),
+                );
+            }
 
             return $ret;
         }
@@ -62,7 +80,7 @@
          *
          * @return bool Whether new tracking requests are ok or not.
          */
-        public function isSiteTrackingDisabled($siteId) {
+        public static function isSiteTrackingDisabled($siteId) {
             // TODO fill with logic.
 
             return FALSE;

@@ -5,19 +5,35 @@
         <div class="card-content">
             <h2 class="card-title">Disabled-State Overview</h2>
 
-            <table style="width: 50%;">
-                <tr>
-                    <th style="text-align: left">Gesperrt</th>
-                    <th style="text-align: left">Name</th>
-                </tr>
-
-                {% for site in sites %}
+            <form action="."
+                  method="post">
+                <table style="width: 50%;">
                     <tr>
-                        <td>{{ site.disabled }}</td>
-                        <td>{{ site.label }}</td>
+                        <th style="text-align: left">Gesperrt</th>
+                        <th style="text-align: left">Name</th>
                     </tr>
-                {% endfor %}
-            </table>
+
+                    {% for site in sites %}
+                        <tr>
+                            <td>
+                                <input type="checkbox"
+                                        {% if site.disabled %}
+                                            checked="checked"
+                                        {% endif %}
+                                       name="disable-{{ site.id }}"
+                                       style="position: relative; left: auto; opacity: 1"
+                                >
+                            </td>
+                            <td>
+                                <a href="{{ site.url }}"
+                                   target="_blank">
+                                    {{ site.label }}
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </form>
         </div>
     </div>
 {% endblock %}
