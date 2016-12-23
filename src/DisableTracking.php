@@ -22,16 +22,26 @@
          */
         public function registerEvents() {
             return array(
-                'Tracker.initRequestSet' => 'newTrackingRequest'
+                'Tracker.initRequestSet' => 'newTrackingRequest',
             );
         }
 
 
         /**
-         * @param RequestSet $arg
+         * Event-Handler for a new tracking request.
          */
-        public function newTrackingRequest ($arg) {
-            die();
+        public function newTrackingRequest() {
+            if (isset($_GET['idsite']) === TRUE) {
+                $siteId = intval($_GET['idsite']);
+                $disabled = FALSE;
+
+                // TODO check whether this site is currently disabled.
+
+                if ($disabled === TRUE) {
+                    // End tracking here, as of tracking for this page should be disabled, admin sais.
+                    die();
+                }
+            }
         }
 
 
