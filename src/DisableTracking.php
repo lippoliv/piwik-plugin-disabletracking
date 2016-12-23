@@ -8,8 +8,11 @@
 
     namespace Piwik\Plugins\DisableTracking;
 
+    use Piwik\Plugin;
+    use Piwik\Tracker\RequestSet;
+
     class DisableTracking extends
-        \Piwik\Plugin {
+        Plugin {
 
 
         /**
@@ -25,7 +28,7 @@
 
 
         /**
-         * @param array $arg
+         * @param RequestSet $arg
          */
         public function newTrackingRequest ($arg) {
             die();
