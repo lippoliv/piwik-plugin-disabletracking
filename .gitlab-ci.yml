@@ -1,0 +1,31 @@
+cache:
+  key: "$CI_BUILD_REF"
+  paths:
+    - DisableTracking/
+
+stages:
+  - build
+  - test
+  - archive
+
+build:
+  stage: build
+  tags:
+    - php
+  script:
+    - rm -rf DisableTracking
+    - mv src DisableTracking
+
+archive:
+  stage: archive
+  tags:
+    - php
+  script:
+    - echo "ARCHIVE"
+  artifacts:
+    name: DisableTracking-$CI_BUILD_REF_NAME
+    paths:
+      - DisableTracking/
+  only:
+    - master
+    - tags
