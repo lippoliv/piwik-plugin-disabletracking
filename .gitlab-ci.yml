@@ -21,7 +21,8 @@ archive:
   tags:
     - php
   script:
-    - sed -i "s/\"version\"`echo \":\"` \".+?\",/\"version\"`echo \":\"` \"$CI_BUILD_REF_NAME\",/g" DisableTracking/plugin.json
+    - sed -i "s/\"version\"`echo \":\"` \"master\",/\"version\"`echo \":\"` \"$CI_BUILD_REF_NAME\",/g" DisableTracking/plugin.json
+    - sed -i "s/\"version\"`echo \":\"` \"0.0.0\",/\"version\"`echo \":\"` \"$CI_BUILD_REF_NAME\",/g" DisableTracking/plugin.json
   artifacts:
     name: DisableTracking-$CI_BUILD_REF_NAME
     paths:
