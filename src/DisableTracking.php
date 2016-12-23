@@ -9,7 +9,6 @@
     namespace Piwik\Plugins\DisableTracking;
 
     use Piwik\Plugin;
-    use Piwik\Tracker\RequestSet;
 
     class DisableTracking extends
         Plugin {
@@ -33,15 +32,24 @@
         public function newTrackingRequest() {
             if (isset($_GET['idsite']) === TRUE) {
                 $siteId = intval($_GET['idsite']);
-                $disabled = FALSE;
 
-                // TODO check whether this site is currently disabled.
-
-                if ($disabled === TRUE) {
+                if ($this->isSiteTrackingDisabled($siteId) === TRUE) {
                     // End tracking here, as of tracking for this page should be disabled, admin sais.
                     die();
                 }
             }
+        }
+
+
+        /**
+         * @param integer $siteId The site id to check.
+         *
+         * @return bool Whether new tracking requests are ok or not.
+         */
+        public function isSiteTrackingDisabled($siteId) {
+            // TODO fill with logic.
+
+            return FALSE;
         }
 
 
