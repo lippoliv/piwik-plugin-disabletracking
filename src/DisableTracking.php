@@ -16,6 +16,9 @@
         Plugin {
 
 
+        const TABLEDISABLETRACKINGMAP = 'disable_site_tracking';
+
+
         /**
          * @return array The information for each tracked site if it is disabled or not.
          */
@@ -84,6 +87,40 @@
             // TODO fill with logic.
 
             return FALSE;
+        }
+
+
+        /**
+         * Generate table to store disable states while install plugin.
+         *
+         * @throws \Exception
+         */
+        public function install() {
+            try {
+                $sql = "CREATE TABLE " . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . " (
+                        id INT NOT NULL AUTO_INCREMENT,
+                        siteId INT NOT NULL,
+                        created_at DATETIME NOT NULL,
+                        deleted_at DATETIME NOT NULL,
+                        PRIMARY KEY (id)
+                    )  DEFAULT CHARSET=utf8";
+                Db::exec($sql);
+            } catch (Exception $e) {
+                // ignore error if table already exists (1050 code is for 'table already exists')
+                if (Db::get()
+                      ->isErrNo($e, '1050') === FALSE
+                ) {
+                    throw $e;
+                }
+            }
+        }
+
+
+        /**
+         * Remove plugins table, while uninstall the plugin.
+         */
+        public function uninstall() {
+            Db::dropTables(Common::prefixTable(self::TABLEDISABLETRACKINGMAP));
         }
 
 
