@@ -1,0 +1,44 @@
+{% extends 'admin.twig' %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-content">
+            <h2 class="card-title">Disabled-State Overview</h2>
+
+            <form action="?module=DisableTracking&action="
+                  method="post">
+                <input type="hidden" name="saveDisabledSitesState" value="1">
+
+                <table style="width: 50%;">
+                    <tr>
+                        <th style="text-align: left">Disabled</th>
+                        <th style="text-align: left">Name</th>
+                    </tr>
+
+                    {% for site in sites %}
+                        <tr>
+                            <td>
+                                <input type="checkbox"
+                                        {% if site.disabled %}
+                                            checked="checked"
+                                        {% endif %}
+                                       name="disable-{{ site.id }}"
+                                       style="position: relative; left: auto; opacity: 1"
+                                />
+                            </td>
+                            <td>
+                                <a href="{{ site.url }}"
+                                   target="_blank">
+                                    {{ site.label }}
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+
+                <br>
+                <input type="submit" class="btn btn-large" value="Speichern" />
+            </form>
+        </div>
+    </div>
+{% endblock %}

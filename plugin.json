@@ -1,0 +1,37 @@
+{
+    "name":        "DisableTracking",
+    "description": "Provides the ability to disable tracking for piwik sites. So you dont grow in data but keep old data for later reporting.",
+    "version":     "0.0.0",
+    "theme":       false,
+    "require":     {
+        "piwik": ">=3.0.0-stable,<4.0.0",
+        "php":   ">=5.5.0"
+    },
+    "authors":     [
+        {
+            "name":     "Lipperts WEB",
+            "email":    "info@lipperts-web.de",
+            "homepage": "http://lipperts-web.de"
+        }
+    ],
+    "support":     {
+        "email":  "support@lipperts-web.de",
+        "issues": "",
+        "forum":  "",
+        "irc":    "",
+        "wiki":   "",
+        "source": "",
+        "docs":   "",
+        "rss":    ""
+    },
+    "homepage":    "https://lw-scm.de/lipperts-web/piwik-plugin-disabletracking",
+    "license":     "GPL v3+",
+    "keywords":    [
+        "disable",
+        "tracking",
+        "site"
+    ],
+    "donate": {
+        "paypal": "info@lipperts-web.de"
+    }
+}
