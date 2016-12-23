@@ -11,4 +11,25 @@
     class DisableTracking extends
         \Piwik\Plugin {
 
+
+        /**
+         * Register the events to listen on in this plugin.
+         *
+         * @return array
+         */
+        public function registerEvents() {
+            return array(
+                'Tracker.initRequestSet' => 'newTrackingRequest'
+            );
+        }
+
+
+        /**
+         * @param array $arg
+         */
+        public function newTrackingRequest ($arg) {
+            die();
+        }
+
+
     }
