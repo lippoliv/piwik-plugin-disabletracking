@@ -43,7 +43,7 @@
                     'id'       => $row['id'],
                     'label'    => $row['name'],
                     'url'      => $row['main_url'],
-                    'disabled' => false,
+                    'disabled' => FALSE,
                 );
             }
 
@@ -53,6 +53,47 @@
             }
 
             return $ret;
+        }
+
+
+        /**
+         * Disables tracking for the given site.
+         *
+         * @param integer $id The site do enable tracking for.
+         */
+        private static function disableSiteTracking($id) {
+            if (self::isSiteTrackingDisabled($id) === FALSE) {
+                $sql = "
+                    INSERT INTO `" . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . "`
+                        (siteId, created_at)
+                    VALUES
+                        ($id, NOW())
+                ";
+                Db::exec($sql);
+            }
+        }
+
+
+        /**
+         * Enables tracking for all sites except the given siteIds.
+         *
+         * @param array $siteIds The sites to exclude from process.
+         */
+        private static function enableAllSiteTrackingExcept($siteIds) {
+            $sql = "
+                UPDATE
+                    `" . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . "`
+                SET
+                    `deleted_at`= NOW()
+                WHERE 
+                    `deleted_at` IS NULL 
+            ";
+
+            if (count($siteIds) !== 0) {
+                $sql .= "AND `siteId` NOT IN (" . join(',', $siteIds) . ")";
+            }
+
+            Db::exec($sql);
         }
 
 
@@ -89,25 +130,18 @@
          * @return bool Whether new tracking requests are ok or not.
          */
         public static function isSiteTrackingDisabled($siteId) {
-            $ret = FALSE;
-            try {
-                $sql = "
-                    SELECT
-                      count(*) AS `disabled`
-                    FROM " . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . "
-                    WHERE
-                        siteId = $siteId AND
-                        deleted_at IS NULL;
-                ";
+            $sql = "
+                SELECT
+                  count(*) AS `disabled`
+                FROM " . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . "
+                WHERE
+                    siteId = $siteId AND
+                    deleted_at IS NULL;
+            ";
 
-                $state = Db::fetchAll($sql);
+            $state = Db::fetchAll($sql);
 
-                $ret = boolval($state[0]['disabled']);
-            } catch (\Exception $e) {
-                // Do nothing;
-            }
-
-            return $ret;
+            return boolval($state[0]['disabled']);
         }
 
 
@@ -142,6 +176,28 @@
          */
         public function uninstall() {
             Db::dropTables(Common::prefixTable(self::TABLEDISABLETRACKINGMAP));
+        }
+
+
+        /**
+         * Save new input.
+         */
+        public static function save() {
+            $disabled = array();
+
+            foreach ($_POST as $key => $state) {
+                if (strpos($key, '-') !== FALSE) {
+                    $id = preg_split("/-/", $key);
+                    $id = $id[1];
+
+                    if ($state === 'on') {
+                        self::disableSiteTracking($id);
+                        $disabled[] = $id;
+                    }
+                }
+            }
+
+            self::enableAllSiteTrackingExcept($disabled);
         }
 
 
