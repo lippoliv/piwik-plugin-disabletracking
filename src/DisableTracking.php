@@ -15,6 +15,22 @@
 
 
         /**
+         * @return array The information for each tracked site if it is disabled or not.
+         */
+        public static function getSitesStates() {
+            $ret = array(
+                array(
+                    'id'       => 10,
+                    'label'    => 'Meeting Jesus',
+                    'disabled' => FALSE,
+                ),
+            );
+
+            return $ret;
+        }
+
+
+        /**
          * Register the events to listen on in this plugin.
          *
          * @return array
