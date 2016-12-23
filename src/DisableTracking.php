@@ -43,8 +43,13 @@
                     'id'       => $row['id'],
                     'label'    => $row['name'],
                     'url'      => $row['main_url'],
-                    'disabled' => self::isSiteTrackingDisabled($row['id']),
+                    'disabled' => false,
                 );
+            }
+
+            // Get disabled states seperately to not destroy our db query resultset.
+            for ($i = 0; $i < count($ret); $i++) {
+                $ret[$i]['disabled'] = self::isSiteTrackingDisabled($ret[$i]['id']);
             }
 
             return $ret;
@@ -84,9 +89,25 @@
          * @return bool Whether new tracking requests are ok or not.
          */
         public static function isSiteTrackingDisabled($siteId) {
-            // TODO fill with logic.
+            $ret = FALSE;
+            try {
+                $sql = "
+                    SELECT
+                      count(*) AS `disabled`
+                    FROM " . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . "
+                    WHERE
+                        siteId = $siteId AND
+                        deleted_at IS NULL;
+                ";
 
-            return FALSE;
+                $state = Db::fetchAll($sql);
+
+                $ret = boolval($state[0]['disabled']);
+            } catch (\Exception $e) {
+                // Do nothing;
+            }
+
+            return $ret;
         }
 
 
@@ -101,7 +122,7 @@
                         id INT NOT NULL AUTO_INCREMENT,
                         siteId INT NOT NULL,
                         created_at DATETIME NOT NULL,
-                        deleted_at DATETIME NOT NULL,
+                        deleted_at DATETIME,
                         PRIMARY KEY (id)
                     )  DEFAULT CHARSET=utf8";
                 Db::exec($sql);
