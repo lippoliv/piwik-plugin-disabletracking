@@ -2,6 +2,7 @@
     namespace Piwik\Plugins\DisableTracking;
 
     use Piwik\Menu\MenuAdmin;
+    use Piwik\Piwik;
 
     class Menu extends
         \Piwik\Plugin\Menu {
@@ -13,7 +14,9 @@
          * @param \Piwik\Menu\MenuAdmin $menu The current Menu.
          */
         public function configureAdminMenu(MenuAdmin $menu) {
-            $menu->addMeasurableItem('Disable Tracking', $this->urlForDefaultAction());
+            if (Piwik::hasUserSuperUserAccess() === TRUE) {
+                $menu->addMeasurableItem('Disable Tracking', $this->urlForDefaultAction());
+            }
         }
 
 
