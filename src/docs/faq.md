@@ -1,5 +1,5 @@
 ## FAQ
 
-__My question?__
+__Will the Plugin initially disable all site tracking?__
 
-My answer
+No.
