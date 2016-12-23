@@ -14,15 +14,5 @@
         </SOURCES>
       </library>
     </orderEntry>
-    <orderEntry type="module-library">
-      <library name="PHP" type="php">
-        <CLASSES>
-          <root url="file://C:/_dep/piwik-3.0.0" />
-        </CLASSES>
-        <SOURCES>
-          <root url="file://C:/_dep/piwik-3.0.0" />
-        </SOURCES>
-      </library>
-    </orderEntry>
   </component>
 </module>
