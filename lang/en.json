@@ -1,0 +1,8 @@
+{
+    "DisableSiteTracking": {
+        "FormTitle": "Disabled-State Overview",
+        "SiteDisabledLabel": "Disabled",
+        "SiteNameLabel": "Name",
+        "SaveButtonLabel": "Save"
+    }
+}

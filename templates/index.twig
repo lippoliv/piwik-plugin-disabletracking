@@ -3,7 +3,7 @@
 {% block content %}
     <div class="card">
         <div class="card-content">
-            <h2 class="card-title">Disabled-State Overview</h2>
+            <h2 class="card-title">{{ 'DisableSiteTracking_FormTitle'|translate }}</h2>
 
             <form action="?module=DisableTracking&action="
                   method="post">
@@ -11,8 +11,8 @@
 
                 <table style="width: 50%;">
                     <tr>
-                        <th style="text-align: left">Disabled</th>
-                        <th style="text-align: left">Name</th>
+                        <th style="text-align: left">{{ 'DisableSiteTracking_SiteDisabledLabel'|translate }}</th>
+                        <th style="text-align: left">{{ 'DisableSiteTracking_SiteNameLabel'|translate }}</th>
                     </tr>
 
                     {% for site in sites %}
@@ -37,7 +37,7 @@
                 </table>
 
                 <br>
-                <input type="submit" class="btn btn-large" value="Speichern" />
+                <input type="submit" class="btn btn-large" value="{{ 'DisableSiteTracking_SaveButtonLabel'|translate }}" />
             </form>
         </div>
     </div>
