@@ -7,14 +7,19 @@ use Piwik\Container\StaticContainer;
 use Piwik\Piwik;
 use Piwik\Plugin\API as BaseAPI;
 
+/**
+ * Disable Tracking API.
+ */
 class API extends BaseAPI
 {
     private static $instance = null;
 
     /**
-     * @throws \Exception
+     * Get Disable Tracking API instance.
      *
-     * @return API
+     * @throws \Exception if unable to bind to the container
+     *
+     * @return API the class instance
      */
     public static function getInstance()
     {
@@ -25,7 +30,6 @@ class API extends BaseAPI
                 throw new Exception('DisableTracking_API must inherit API');
             }
             self::$instance = $instance;
-
         } catch (Exception $e) {
             self::$instance = StaticContainer::get('Piwik\Plugins\DisableTracking\API');
             StaticContainer::getContainer()->set('DisableTracking_API', self::$instance);
@@ -35,10 +39,12 @@ class API extends BaseAPI
     }
 
     /**
-     * @param $idSites
-     * @param $archive
+     * Change archive status for websites.
      *
-     * @throws Exception
+     * @param string $idSites the list of comma separated websites IDs
+     * @param $archive 'on' to archive, 'off' to re-enable
+     *
+     * @throws Exception if an error occurred
      */
     public function changeArchiveState($idSites, $archive)
     {
@@ -46,5 +52,4 @@ class API extends BaseAPI
 
         DisableTracking::changeArchiveState(explode(',', $idSites), $archive);
     }
-
 }

@@ -1,8 +1,9 @@
 <?php
 /**
- * Piwik - free/libre analytics platform
+ * Piwik - free/libre analytics platform.
  *
- * @link    http://piwik.org
+ * @see    http://piwik.org
+ *
  * @license http://www.gnu.org/licenses/gpl-3.0.html GPL v3 or later
  */
 
@@ -16,14 +17,22 @@ use Piwik\Piwik;
 use Piwik\Plugin;
 use Piwik\Plugin\Manager;
 
+/**
+ * Disable Tracking plugin.
+ */
 class DisableTracking extends Plugin
 {
+    /**
+     * Database table name.
+     */
     const TABLE_DISABLE_TRACKING_MAP = 'disable_site_tracking';
 
     /**
-     * @throws \Exception
+     * Get the list of websites with their current archiving status.
      *
-     * @return array The information for each tracked site if it is disabled or not.
+     * @throws \Exception if an error occurred
+     *
+     * @return array the information for each tracked site if it is disabled or not
      */
     public static function getSitesStates()
     {
@@ -41,89 +50,45 @@ class DisableTracking extends Plugin
         $rows = Db::fetchAll($sql);
 
         foreach ($rows as $row) {
-            $ret[] = array(
-                'id'       => $row['id'],
-                'label'    => $row['name'],
-                'url'      => $row['main_url'],
+            $ret[] = [
+                'id' => $row['id'],
+                'label' => $row['name'],
+                'url' => $row['main_url'],
                 'disabled' => self::isSiteTrackingDisabled($row['id']),
-            );
-
+            ];
         }
 
         return isset($ret) ? $ret : [];
     }
 
     /**
-     * Disables tracking for the given site.
-     *
-     * @throws \Exception
-     *
-     * @param integer $id The site do enable tracking for.
-     */
-    private static function disableSiteTracking($id)
-    {
-        if (self::isSiteTrackingDisabled($id) === FALSE) {
-            $sql = '
-                    INSERT INTO `' . Common::prefixTable(self::TABLE_DISABLE_TRACKING_MAP) . '`
-                        (siteId, created_at)
-                    VALUES
-                        (:siteId, NOW())
-                ';
-            Db::query($sql, [':siteId' => $id]);
-        }
-    }
-
-    /**
-     * Enables tracking for all sites except the given siteIds.
-     *
-     * @throws \Exception
-     *
-     * @param array $siteIds The sites to exclude from process.
-     */
-    private static function enableAllSiteTrackingExcept($siteIds)
-    {
-        $sql = '
-                UPDATE
-                    `' . Common::prefixTable(self::TABLE_DISABLE_TRACKING_MAP) . '`
-                SET
-                    `deleted_at`= NOW()
-                WHERE 
-                    `deleted_at` IS NULL
-            ';
-        if (count($siteIds) !== 0) {
-            $sql .= ' AND `siteId` NOT IN (' . implode(',', $siteIds) . ')';
-        }
-        Db::query($sql);
-    }
-
-    /**
      * Register the events to listen on in this plugin.
      *
-     * @return array
+     * @return array the array of events and related listener
      */
     public function registerEvents()
     {
-        return array(
+        return [
             'Tracker.initRequestSet' => 'newTrackingRequest',
-        );
+        ];
     }
 
     /**
      * Event-Handler for a new tracking request.
      *
-     * @throws \Exception
+     * @throws \Exception if an error occurred
      */
     public function newTrackingRequest()
     {
-        if (isset($_GET['idsite']) === TRUE) {
-            $siteId = (int)$_GET['idsite'];
+        if (true === isset($_GET['idsite'])) {
+            $siteId = (int) $_GET['idsite'];
             if (Manager::getInstance()->isPluginActivated('ProtectTrackID')) {
                 $settings = StaticContainer::get('Piwik\Plugins\ProtectTrackID\SystemSettings');
-                $base =  $settings->base->getValue();
+                $base = $settings->base->getValue();
                 $salt = $settings->salt->getValue();
                 $length = $settings->length->getValue();
                 $Hashid = new Hashids($salt, $length, $base);
-                $siteId = (int)$Hashid->decode($_GET['idsite'])[0];
+                $siteId = (int) $Hashid->decode($_GET['idsite'])[0];
             }
             if (self::isSiteTrackingDisabled($siteId)) {
                 // End tracking here, as of tracking for this page should be disabled, admin sais.
@@ -133,11 +98,13 @@ class DisableTracking extends Plugin
     }
 
     /**
-     * @param integer $siteId The site id to check.
+     * Check if site tracking is disabled.
      *
-     * @throws \Exception
+     * @param int $siteId the site id to check
      *
-     * @return bool Whether new tracking requests are ok or not.
+     * @throws \Exception if an error occurred
+     *
+     * @return bool 'true' if tracking is disabled, 'false' otherwise
      */
     public static function isSiteTrackingDisabled($siteId)
     {
@@ -158,7 +125,7 @@ class DisableTracking extends Plugin
     /**
      * Generate table to store disable states while install plugin.
      *
-     * @throws \Exception
+     * @throws \Exception if an error occurred
      */
     public function install()
     {
@@ -183,15 +150,15 @@ class DisableTracking extends Plugin
     /**
      * Save new input.
      *
-     * @throws \Exception
+     * @throws \Exception if an error occurred
      */
     public static function save()
     {
         foreach ($_POST as $key => $state) {
-            if (strpos($key, '-') !== FALSE) {
+            if (false !== strpos($key, '-')) {
                 $id = explode('-', $key);
                 $id = $id[1];
-                if ($state === 'on') {
+                if ('on' === $state) {
                     self::disableSiteTracking($id);
                     $disabled[] = $id;
                 }
@@ -202,17 +169,19 @@ class DisableTracking extends Plugin
     }
 
     /**
-     * @param $idSites
-     * @param $disabled
+     * Change archiving status for the websites.
      *
-     * @throws \Exception
+     * @param array $idSites the list of websites
+     * @param string $disabled 'on' to archive, 'off' to re-enable
+     *
+     * @throws \Exception if an error occurred
      */
     public static function changeArchiveState($idSites, $disabled)
     {
         Piwik::checkUserHasAdminAccess($idSites);
 
         foreach ($idSites as $key => $idSite) {
-            if ($disabled === 'on') {
+            if ('on' === $disabled) {
                 if (!self::isSiteTrackingDisabled($idSite)) {
                     self::disableSiteTracking($idSite);
                 }
@@ -227,5 +196,50 @@ class DisableTracking extends Plugin
                 Db::query($sql, [':idSite' => $idSite]);
             }
         }
+    }
+
+    /**
+     * Disables tracking for the given site.
+     *
+     *
+     * @param int $id the site do enable tracking for
+     *
+     * @throws \Exception if an error occurred
+     */
+    private static function disableSiteTracking($id)
+    {
+        if (false === self::isSiteTrackingDisabled($id)) {
+            $sql = '
+                    INSERT INTO `' . Common::prefixTable(self::TABLE_DISABLE_TRACKING_MAP) . '`
+                        (siteId, created_at)
+                    VALUES
+                        (:siteId, NOW())
+                ';
+            Db::query($sql, [':siteId' => $id]);
+        }
+    }
+
+    /**
+     * Enables tracking for all sites except the given siteIds.
+     *
+     *
+     * @param array $siteIds the sites to exclude from process
+     *
+     * @throws \Exception if an error occurred
+     */
+    private static function enableAllSiteTrackingExcept($siteIds)
+    {
+        $sql = '
+                UPDATE
+                    `' . Common::prefixTable(self::TABLE_DISABLE_TRACKING_MAP) . '`
+                SET
+                    `deleted_at`= NOW()
+                WHERE 
+                    `deleted_at` IS NULL
+            ';
+        if (0 !== count($siteIds)) {
+            $sql .= ' AND `siteId` NOT IN (' . implode(',', $siteIds) . ')';
+        }
+        Db::query($sql);
     }
 }

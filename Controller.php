@@ -1,27 +1,30 @@
 <?php
-    namespace Piwik\Plugins\DisableTracking;
 
-    use Piwik\Piwik;
-    use Piwik\Plugin\ControllerAdmin;
+namespace Piwik\Plugins\DisableTracking;
 
-    class Controller extends
-        ControllerAdmin {
+use Piwik\Piwik;
+use Piwik\Plugin\ControllerAdmin;
 
+/**
+ * Disable Tracking plugin controller.
+ */
+class Controller extends ControllerAdmin
+{
+    /**
+     * Rendering the overview over all pages for managing the disable-state.
+     *
+     * @throws \Exception if an error occurred
+     *
+     * @return string the rendered template to show
+     */
+    public function index()
+    {
+        Piwik::checkUserHasSuperUserAccess();
 
-        /**
-         * Rendering the overview over all pages for managing the disable-state.
-         *
-         * @return string
-         */
-        public function index() {
-            Piwik::checkUserHasSuperUserAccess();
-
-            if (isset($_POST) === TRUE && isset($_POST['saveDisabledSitesState']) === TRUE) {
-                DisableTracking::save();
-            }
-
-            return $this->renderTemplate('index', array('sites' => DisableTracking::getSitesStates()));
+        if (true === isset($_POST) && true === isset($_POST['saveDisabledSitesState'])) {
+            DisableTracking::save();
         }
 
-
+        return $this->renderTemplate('index', ['sites' => DisableTracking::getSitesStates()]);
     }
+}
