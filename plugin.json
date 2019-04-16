@@ -1,7 +1,7 @@
 {
     "name":        "DisableTracking",
     "description": "Provides the ability to disable tracking for piwik sites. So you dont grow in data but keep old data for later reporting.",
-    "version":     "1.0.3",
+    "version":     "1.0.4",
     "theme":       false,
     "require":     {
         "piwik": ">=3.0.0-stable,<4.0.0",
