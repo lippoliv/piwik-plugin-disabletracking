@@ -200,4 +200,32 @@ class DisableTracking extends Plugin
 
         self::enableAllSiteTrackingExcept(isset($disabled) ? $disabled : []);
     }
+
+    /**
+     * @param $idSites
+     * @param $disabled
+     *
+     * @throws \Exception
+     */
+    public static function changeArchiveState($idSites, $disabled)
+    {
+        Piwik::checkUserHasAdminAccess($idSites);
+
+        foreach ($idSites as $key => $idSite) {
+            if ($disabled === 'on') {
+                if (!self::isSiteTrackingDisabled($idSite)) {
+                    self::disableSiteTracking($idSite);
+                }
+            } else {
+                $sql = 'UPDATE `' . Common::prefixTable(self::TABLE_DISABLE_TRACKING_MAP) . '`
+                        SET
+                            `deleted_at`= NOW()
+                        WHERE 
+                            `deleted_at` IS NULL
+                            AND
+                            `siteId` = :idSite';
+                Db::query($sql, [':idSite' => $idSite]);
+            }
+        }
+    }
 }
