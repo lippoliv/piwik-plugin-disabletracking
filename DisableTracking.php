@@ -80,7 +80,7 @@ class DisableTracking extends Plugin
      */
     public function newTrackingRequest()
     {
-        if (true === isset($_GET['idsite'])) {
+        if (isset($_GET['idsite'])) {
             $siteId = (int) $_GET['idsite'];
             if (Manager::getInstance()->isPluginActivated('ProtectTrackID')) {
                 $settings = StaticContainer::get('Piwik\Plugins\ProtectTrackID\SystemSettings');
@@ -169,14 +169,14 @@ class DisableTracking extends Plugin
     }
 
     /**
-     * Change archiving status for the websites.
+     * Change disabled status for the websites.
      *
      * @param array $idSites the list of websites
      * @param string $disabled 'on' to archive, 'off' to re-enable
      *
      * @throws \Exception if an error occurred
      */
-    public static function changeArchiveState($idSites, $disabled)
+    public static function changeDisableState($idSites, $disabled)
     {
         Piwik::checkUserHasAdminAccess($idSites);
 
@@ -208,7 +208,7 @@ class DisableTracking extends Plugin
      */
     private static function disableSiteTracking($id)
     {
-        if (false === self::isSiteTrackingDisabled($id)) {
+        if (!self::isSiteTrackingDisabled($id)) {
             $sql = '
                     INSERT INTO `' . Common::prefixTable(self::TABLE_DISABLE_TRACKING_MAP) . '`
                         (siteId, created_at)

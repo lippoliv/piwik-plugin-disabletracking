@@ -21,7 +21,7 @@ class Controller extends ControllerAdmin
     {
         Piwik::checkUserHasSuperUserAccess();
 
-        if (true === isset($_POST) && true === isset($_POST['saveDisabledSitesState'])) {
+        if (isset($_POST['saveDisabledSitesState'])) {
             DisableTracking::save();
         }
 

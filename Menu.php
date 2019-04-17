@@ -14,7 +14,7 @@ class Menu extends \Piwik\Plugin\Menu
      */
     public function configureAdminMenu(MenuAdmin $menu)
     {
-        if (true === Piwik::hasUserSuperUserAccess()) {
+        if (Piwik::hasUserSuperUserAccess()) {
             $menu->addMeasurableItem('Disable Tracking', $this->urlForDefaultAction());
         }
     }
