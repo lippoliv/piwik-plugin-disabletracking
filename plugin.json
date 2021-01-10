@@ -14,13 +14,13 @@
             "homepage": "https://lipperts-web.de"
         }
     ],
-    "support":     {
-        "email":  "support@lipperts-web.de",
-        "issues": "",
+    "support": {
+        "email":  "incoming+lipperts-web-piwik-plugin-disabletracking-148-issue-@git.lipperts-web.de",
+        "issues": "https://lw-scm.de/lipperts-web/piwik-plugin-disabletracking/-/issues",
         "forum":  "",
         "irc":    "",
         "wiki":   "",
-        "source": "",
+        "source": "https://lw-scm.de/lipperts-web/piwik-plugin-disabletracking/-/tree/master",
         "docs":   "",
         "rss":    ""
     },
