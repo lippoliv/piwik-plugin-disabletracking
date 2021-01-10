@@ -9,4 +9,3 @@ of your Piwik instance, even for a short timespan as also forever. Working this 
 you can keep the collected data and do later reports.
 
 The Plugin is for free, feel free to send spend me a coffe and/or send me feedback.
- 
