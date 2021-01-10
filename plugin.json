@@ -4,8 +4,8 @@
     "version":     "master",
     "theme":       false,
     "require": {
-        "matomo": ">=4.0.0,<5.0.0",
-        "php":    ">=7.2.5"
+        "matomo": ">=3.0.0,<5.0.0",
+        "php":    ">=5.6.0"
     },
     "authors":     [
         {
