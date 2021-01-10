@@ -4,14 +4,14 @@
     "version":     "master",
     "theme":       false,
     "require": {
-        "matomo": ">=3.0.0,<5.0.0",
-        "php":    ">=5.6.0"
+        "piwik": ">=3.0.0,<5.0.0",
+        "php":   ">=5.6.0"
     },
-    "authors":     [
+    "authors": [
         {
             "name":     "Lipperts WEB",
             "email":    "info@lipperts-web.de",
-            "homepage": "http://lipperts-web.de"
+            "homepage": "https://lipperts-web.de"
         }
     ],
     "support":     {
