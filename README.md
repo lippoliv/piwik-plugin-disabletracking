@@ -1,11 +1,9 @@
-# Piwik DisableTracking Plugin
+# DisableTracking Plugin
 
 ## Description
 
-Disable Tracking for specific sites wihtout removing Tracking-Code.
+In some cases it's pretty handy to disable tracking for selected websites of your Matomo instance, even for a short
+timespan or forever. Working this way you can keep the collected data for later reporting.
 
-In some cases it is pretty handy to disable tracking for selected Websites
-of your Piwik instance, even for a short timespan as also forever. Working this way
-you can keep the collected data and do later reports.
-
-The Plugin is for free, feel free to send spend me a coffe and/or send me feedback.
+This plugin is for free, feel free to spend me a coffe and send me your feedback. Further information you can find in
+Matomo marketplace.
