@@ -61,7 +61,7 @@
          *
          * @param integer $id The site do enable tracking for.
          */
-        private static function disableSiteTracking($id) {
+        public static function disableSiteTracking($id) {
             if (self::isSiteTrackingDisabled($id) === FALSE) {
                 $sql = "
                     INSERT INTO `" . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . "`
@@ -79,7 +79,7 @@
          *
          * @param array $siteIds The sites to exclude from process.
          */
-        private static function enableAllSiteTrackingExcept($siteIds) {
+        public static function enableAllSiteTrackingExcept($siteIds = array()) {
             $sql = "
                 UPDATE
                     `" . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . "`
