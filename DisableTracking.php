@@ -8,6 +8,7 @@
 
     namespace Piwik\Plugins\DisableTracking;
 
+    use Exception;
     use Piwik\Common;
     use Piwik\Db;
     use Piwik\Plugin;
@@ -21,20 +22,21 @@
 
         /**
          * @return array The information for each tracked site if it is disabled or not.
+         * @throws \Exception
          */
         public static function getSitesStates() {
             $ret = array();
 
-            $sql = "
+            $sql = '
               SELECT
                 `idsite` as `id`,
                 `name`,
                 `main_url`
               FROM
-                `" . Common::prefixTable('site') . "`
+                `' . Common::prefixTable('site') . '`
               ORDER BY
                 `name` ASC
-            ";
+            ';
 
             $rows = Db::query($sql);
 
@@ -60,16 +62,21 @@
          * Disables tracking for the given site.
          *
          * @param integer $id The site do enable tracking for.
+         *
+         * @throws \Exception
          */
         public static function disableSiteTracking($id) {
             if (self::isSiteTrackingDisabled($id) === FALSE) {
-                $sql = "
-                    INSERT INTO `" . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . "`
+                $sql = '
+                    INSERT INTO `' . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . '`
                         (siteId, created_at)
                     VALUES
-                        ($id, NOW())
-                ";
-                Db::exec($sql);
+                        (?, NOW())
+                ';
+                Db::query(
+                    $sql,
+                    $id
+                );
             }
         }
 
@@ -78,22 +85,27 @@
          * Enables tracking for all sites except the given siteIds.
          *
          * @param array $siteIds The sites to exclude from process.
+         *
+         * @throws \Exception
          */
         public static function enableAllSiteTrackingExcept($siteIds = array()) {
-            $sql = "
+            $sql = '
                 UPDATE
-                    `" . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . "`
+                    `' . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . '`
                 SET
                     `deleted_at`= NOW()
                 WHERE 
                     `deleted_at` IS NULL 
-            ";
+            ';
 
             if (count($siteIds) !== 0) {
-                $sql .= "AND `siteId` NOT IN (" . join(',', $siteIds) . ")";
+                $sql .= 'AND `siteId` NOT IN (?)';
             }
 
-            Db::exec($sql);
+            Db::query(
+                $sql,
+                join(',', $siteIds)
+            );
         }
 
 
@@ -128,18 +140,22 @@
          * @param integer $siteId The site id to check.
          *
          * @return bool Whether new tracking requests are ok or not.
+         * @throws \Exception
          */
         public static function isSiteTrackingDisabled($siteId) {
-            $sql = "
+            $sql = '
                 SELECT
                   count(*) AS `disabled`
-                FROM " . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . "
+                FROM `' . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . '`
                 WHERE
-                    siteId = $siteId AND
+                    siteId = ? AND
                     deleted_at IS NULL;
-            ";
+            ';
 
-            $state = Db::fetchAll($sql);
+            $state = Db::fetchAll(
+                $sql,
+                $siteId
+            );
 
             return boolval($state[0]['disabled']);
         }
@@ -152,19 +168,18 @@
          */
         public function install() {
             try {
-                $sql = "CREATE TABLE " . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . " (
+                $sql = 'CREATE TABLE `' . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . '` (
                         id INT NOT NULL AUTO_INCREMENT,
                         siteId INT NOT NULL,
                         created_at DATETIME NOT NULL,
                         deleted_at DATETIME,
                         PRIMARY KEY (id)
-                    )  DEFAULT CHARSET=utf8";
+                    )  DEFAULT CHARSET=utf8';
                 Db::exec($sql);
             } catch (Exception $e) {
                 // ignore error if table already exists (1050 code is for 'table already exists')
                 if (Db::get()
-                      ->isErrNo($e, '1050') === FALSE
-                ) {
+                      ->isErrNo($e, '1050') === FALSE) {
                     throw $e;
                 }
             }
