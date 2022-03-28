@@ -100,11 +100,14 @@
 
             if (count($siteIds) !== 0) {
                 $sql .= 'AND `siteId` NOT IN (?)';
+                $binds = join(',', $siteIds);
+            } else {
+                $binds = [];
             }
 
             Db::query(
                 $sql,
-                join(',', $siteIds)
+                $binds
             );
         }
 
