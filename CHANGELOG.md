@@ -1,6 +1,6 @@
 ## Changelog
 
-* 1.3.0 Support Matomo 5
+* 1.3.0 Support Matomo 5, Support PHP 8
 * 1.2.0 Security update (SQL Injection), add german translation, update documentation and faq
 * 1.1.1 Update plugin metadata
 * 1.1.0 Support Matomo 4

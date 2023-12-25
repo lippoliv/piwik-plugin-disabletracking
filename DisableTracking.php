@@ -89,6 +89,8 @@
          * @throws \Exception
          */
         public static function enableAllSiteTrackingExcept($siteIds = array()) {
+            $params = [];
+
             $sql = '
                 UPDATE
                     `' . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . '`
@@ -100,11 +102,15 @@
 
             if (count($siteIds) !== 0) {
                 $sql .= 'AND `siteId` NOT IN (?)';
+                $params[] = join(
+                    ',',
+                    $siteIds
+                );
             }
 
             Db::query(
                 $sql,
-                join(',', $siteIds)
+                $params
             );
         }
 
