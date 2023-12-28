@@ -59,59 +59,65 @@
 
 
         /**
-         * Disables tracking for the given site.
-         *
-         * @param integer $id The site do enable tracking for.
-         *
-         * @throws \Exception
-         */
-        public static function disableSiteTracking($id) {
-            if (self::isSiteTrackingDisabled($id) === FALSE) {
-                $sql = '
-                    INSERT INTO `' . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . '`
-                        (siteId, created_at)
-                    VALUES
-                        (?, NOW())
-                ';
-                Db::query(
-                    $sql,
-                    $id
-                );
-            }
-        }
-
-
-        /**
          * Enables tracking for all sites except the given siteIds.
          *
          * @param array $siteIds The sites to exclude from process.
          *
          * @throws \Exception
          */
-        public static function enableAllSiteTrackingExcept($siteIds = array()) {
-            $params = [];
+        public static function setDisabledSiteTracking($siteIds = array()) {
+            $allExistingIds = [];
 
+            // Get all site ids in our "disabled tracking map"
             $sql = '
-                UPDATE
-                    `' . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . '`
-                SET
-                    `deleted_at`= NOW()
-                WHERE 
-                    `deleted_at` IS NULL 
+              SELECT
+                `siteId` as `id`
+              FROM
+                `' . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . '`
             ';
-
-            if (count($siteIds) !== 0) {
-                $sql .= 'AND `siteId` NOT IN (?)';
-                $params[] = join(
-                    ',',
-                    $siteIds
-                );
+            $rows = Db::query($sql);
+            while (($row = $rows->fetch()) !== FALSE) {
+                $allExistingIds[] = $row['id'];
             }
 
+            // Remove ids, which shouldn't be disabled any longer
+            $idsToDelete = array_diff(
+                $allExistingIds,
+                $siteIds
+            );
+            $sql = '
+                DELETE FROM
+                    `' . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . '`
+                WHERE
+                    siteId in (?)
+            ';
             Db::query(
                 $sql,
-                $params
+                [
+                    join(
+                        ",",
+                        $idsToDelete
+                    ),
+                ]
             );
+
+            // Remove ids, which now should be disabled
+            $idsToAdd = array_diff(
+                $siteIds,
+                $allExistingIds
+            );
+            $sql = '
+                    INSERT INTO `' . Common::prefixTable(self::TABLEDISABLETRACKINGMAP) . '`
+                        (siteId, created_at)
+                    VALUES
+                        (?, NOW())
+                ';
+            foreach ($idsToAdd as $siteId) {
+                Db::query(
+                    $sql,
+                    $siteId
+                );
+            }
         }
 
 
@@ -185,7 +191,10 @@
             } catch (Exception $e) {
                 // ignore error if table already exists (1050 code is for 'table already exists')
                 if (Db::get()
-                      ->isErrNo($e, '1050') === FALSE) {
+                        ->isErrNo(
+                            $e,
+                            '1050'
+                        ) === FALSE) {
                     throw $e;
                 }
             }
@@ -207,18 +216,23 @@
             $disabled = array();
 
             foreach ($_POST as $key => $state) {
-                if (strpos($key, '-') !== FALSE) {
-                    $id = preg_split("/-/", $key);
+                if (strpos(
+                        $key,
+                        '-'
+                    ) !== FALSE) {
+                    $id = preg_split(
+                        "/-/",
+                        $key
+                    );
                     $id = $id[1];
 
                     if ($state === 'on') {
-                        self::disableSiteTracking($id);
                         $disabled[] = $id;
                     }
                 }
             }
 
-            self::enableAllSiteTrackingExcept($disabled);
+            self::setDisabledSiteTracking($disabled);
         }
 
 
